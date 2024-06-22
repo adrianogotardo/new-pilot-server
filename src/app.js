@@ -9,18 +9,11 @@ import { checkCryptSalt } from "./utils/checkCryptSalt.js"
 dotenv.config();
 const port = process.env.PORT || 5000;
 
-async function startServer() {
-    const app = express();
-    app.use(json());
-    app.use(cors());
-    app.use(router);
-    app.use(errorHandler);
-    return app;
-}
+const app = express();
+app.use(json());
+app.use(cors());
+app.use(router);
+app.use(errorHandler);
 
-checkCryptSalt() && startServer().then(
-    (app) => app.listen(port, () => console.log(`Server sendo executado na porta ${port}`))
-).catch(
-    (error) => console.log(error)
-);
+checkCryptSalt() && app.listen(port, () => console.log(`Server sendo executado na porta ${port}`));
 

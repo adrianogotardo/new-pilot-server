@@ -1,9 +1,9 @@
 import { Router } from "express";
 
 const firstRouter = Router();
-const PATH = "/";
+const PATH = "";
 
-firstRouter.get(`${PATH}409`,
+firstRouter.get(`${PATH}/409`,
     () => {
         throw {
             type: "conflict",
@@ -12,7 +12,7 @@ firstRouter.get(`${PATH}409`,
     }
 );
 
-firstRouter.get(`${PATH}404`,
+firstRouter.get(`${PATH}/404`,
     () => {
         throw {
             type: "not_found",
@@ -21,7 +21,7 @@ firstRouter.get(`${PATH}404`,
     }
 );
 
-firstRouter.get(`${PATH}401`,
+firstRouter.get(`${PATH}/401`,
     () => {
         throw {
             type: "unauthorized",
@@ -30,7 +30,7 @@ firstRouter.get(`${PATH}401`,
     }
 );
 
-firstRouter.get(`${PATH}422`,
+firstRouter.get(`${PATH}/422`,
     () => {
         throw {
             type: "unprocessable_entity",
@@ -39,7 +39,7 @@ firstRouter.get(`${PATH}422`,
     }
 );
 
-firstRouter.get(`${PATH}500`,
+firstRouter.get(`${PATH}/500`,
     () => {
         throw {
             type: "internal_server_error",
@@ -48,7 +48,7 @@ firstRouter.get(`${PATH}500`,
     }
 );
 
-firstRouter.get(`${PATH}no-message`,
+firstRouter.get(`${PATH}/no-message`,
     () => {
         throw {
             type: "not_found"
@@ -56,7 +56,7 @@ firstRouter.get(`${PATH}no-message`,
     }
 )
 
-firstRouter.get(`${PATH}no-type`,
+firstRouter.get(`${PATH}/no-type`,
     () => {
         throw {
             type: "unknown"

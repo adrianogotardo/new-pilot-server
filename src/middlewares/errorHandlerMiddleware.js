@@ -13,7 +13,6 @@ export function errorHandler(error, req, res, next) {
         case "internal_server_error":
             return res.status(500).send(message || "Internal Server Error");
         default:
-            console.log(" --- ERRO ---\n Erro desconhecido.\n ------------");
             return res.status(500).send("Unknown Error");
     }
 }
