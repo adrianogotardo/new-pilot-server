@@ -1,15 +1,10 @@
-import Joi from "joi";
-
-const signInSchema = Joi.object({
-    email: Joi.string().required(),
-    password: Joi.string().required()
-})
-
-// para cada rota que possui validaçao de schema, passa-se o schema correto
-// para rotas que nao possuem validaçao de schema (default), passa-se null
+import { signUpSchema } from "../schemas/signUpSchema.js";
+import { signInSchema } from "../schemas/signInSchema.js";
 
 export function identifySchema(route) {
     switch(route) {
+        case "/sign/up":
+            return signUpSchema;
         case "/sign/in":
             return signInSchema;
         default:
