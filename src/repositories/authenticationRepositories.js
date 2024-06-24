@@ -5,8 +5,10 @@ export async function getUserByEmail(email) {
         where: {
             email: email,
         },
+        include: {
+            role: true,
+        }
     });
-    
     return user;
 };
 
@@ -18,6 +20,5 @@ export async function createUser(name, email, password) {
           password: password
         },
     });
-
     return;
 };

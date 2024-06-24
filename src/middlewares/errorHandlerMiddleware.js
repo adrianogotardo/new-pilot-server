@@ -13,6 +13,7 @@ export function errorHandler(error, req, res, next) {
         case "internal_server_error":
             return res.status(500).send(message || "Internal Server Error");
         default:
-            return res.status(500).send(error.message);
+            console.error("\nErro de sistema: " + error.message);
+            return res.status(500).send("Something went wrong. Please try again later!");
     }
 }
