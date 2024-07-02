@@ -4,6 +4,7 @@
  This is the documentation for this project. Here you can find information about the routes used, their usage rules, and the responses you can expect from each of them. If you have any questions while reading this or have suggestions for improving this text, please do not hesitate to inform us!
 
 ## Authentication
+<br />
 
  - `POST/sign/up`: this route is used to create an user in the application.
 	- Expected body:
@@ -35,6 +36,7 @@
 		- Incompatible body: status 422 and a message indicating what's wrong.
 
 ## Employees
+<br />
 
  - `POST/employee`: this route is used to insert a new employee in the application.
 	- Expected headers:
