@@ -5,34 +5,66 @@
 
 ## Authentication
 
- - `POST/sign/up`
-
-	This route is used to create an user in the application.
-	 - Expected body:
+ - `POST/sign/up`: this route is used to create an user in the application.
+	- Expected body:
 		```
 	    {
-	    	"name": "User Erick",
-	    	"email": "email@provider.com",
-	    	"password": "superpassword123!"
+	    	"name": "User Erick",                  // a string
+	    	"email": "email@provider.com",         // an email formatted string
+	    	"password": "superpassword123!"        // a string
 	    }
 		```
 	- Possible responses:
 		- Success: status 201.
-		- Email already registered: 409.
-		- Incompatible body: 422.
+		- Email already registered: status 409.
+		- Incompatible body: status 422 and a message indicating what's wrong.
+<br />
 
- - `POST/sign/in`
-
-	This route is used to log in to the application.
-	 - Expected body:
+ - `POST/sign/in`: this route is used to log in to the application.
+	- Expected body:
 		```
 	    {
-	    	"email": "email@provider.com",
-	    	"password": "superpassword123!"
+	    	"email": "email@provider.com",         // an email formatted string
+	    	"password": "superpassword123!"        // a string
 	    }
 		```
 	- Possible responses:
 		- Success: status 200 and an authenticated token.
 		- Email not registered: status 404.
 		- Incorrect password: status 401.
-		- Incompatible body: status 422.
+		- Incompatible body: status 422 and a message indicating what's wrong.
+
+## Employees
+
+ - `POST/employee`: this route is used to insert a new employee in the application.
+	- Expected headers:
+		```
+		{
+			"Authentication": "token"              // a string token generated on user login
+		}
+		```
+	- Expected body:
+	 	```
+		{
+			"name": "Employee Smith",              // a string
+			"wage": 150000,                        // an integer (actual wage * 100)
+			"phone": 5522988888888,                // an optional integer
+			"documentNumber": "12345678910",       // a string
+			"pix": "smith.mail@provider.com",      // an optional string
+			"observation": "first job",            // an optional string
+			"address": {
+				"street": "Flowers Street",    // a string
+				"number": "Bloco A",           // a string
+				"complement": "Yellow gate",   // an optional string
+				"neighbourhood": "Centro",     // a string
+				"city": "Santos",              // a string
+				"state": "São Paulo",          // a string
+				"postalCode": 12345678         // an integer
+			}
+		}
+		```
+	- Possible responses:
+		- Succes: status 201.
+		- Unauthorized user (inappropriate role): status 401.
+		- Document number already registered: status 409.
+		- Incompatible body: status 422 and a message indicating what's wrong.
