@@ -2,9 +2,8 @@ import { Router } from "express";
 import { signUp, signIn } from "../../controllers/authenticationControllers.js";
 
 const authenticationRouter = Router();
-const PATH = "/sign";
 
-authenticationRouter.post(`${PATH}/up`, signUp);
-authenticationRouter.post(`${PATH}/in`, signIn);
+authenticationRouter.post(`/up`, signUp);
+authenticationRouter.post(`/in`, signIn);
 
 export default authenticationRouter;
