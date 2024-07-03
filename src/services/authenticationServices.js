@@ -21,7 +21,7 @@ export async function registerUser(name, email, password) {
 export async function getUserInfo(email) {
     const userWithThisEmail = await getUserByEmail(email);
     if(!userWithThisEmail) throw {
-        type: "not_found",
+        type: "not found",
         message: "There is no user registered by this email address"
     };
     return userWithThisEmail;
