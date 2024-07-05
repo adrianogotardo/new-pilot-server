@@ -85,10 +85,8 @@
 	- Possible query params:
 		- `stardDate` and `endDate`: limit values of a date range to filter the selection by date. They must be following the ISO 8601 format.
 			- Example: `get/employee?stardDate=2023-01-01T00:00:00+03:00&endDate=2023-12-31T23:59:59-03:00`
-<br />  
 		- `isActive`: boolean value converted to string. It will determine if the response should get only active or only inactive employees.
 			- Example: `get/employee?isActive=false`
-<br />  
 	- Example of response in case of succeeded request:
 		```
 		[
