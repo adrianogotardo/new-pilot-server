@@ -1,4 +1,4 @@
-import { getEmployeeByDocumentNumber, createEmployee, getEmployeesByCustomQuery, updateEmployeeById, getEmployeeById } from "../repositories/employeesRepositories.js";
+import { getEmployeeByDocumentNumber, createEmployee, getEmployeesByCustomQuery, updateEmployeeById, getEmployeeById, deactivateEmployeeById, reactivateEmployeeById } from "../repositories/employeesRepositories.js";
 import { createAddress, updateAddressById } from "../repositories/addressesRepositories.js";
 import { dateRangeFormatter } from "../utils/dateRangeFormatter.js";
 import moment from "moment-timezone";
@@ -42,7 +42,6 @@ export async function getEmployees(startDate, endDate, isActive, timeZone) {
         };
     };
     dbQuery+= ';';
-    console.log(dbQuery);
 
     const employeesList = await getEmployeesByCustomQuery(dbQuery);
 
@@ -90,3 +89,44 @@ export async function updateEmployee(employee) {
     await updateEmployeeById(newEmployee);
     return;
 };
+
+export async function deactivateEmployee(employeeId) {
+    if(!employeeId) throw {
+        type: "422",
+        message: "Invalid employee id"
+    };
+
+    const employee = await getEmployeeById(employeeId);
+    if(!employee) throw {
+        type: "not found",
+        message: "Employee not found"
+    };
+
+    if(!employee.is_active) throw {
+        type: "406",
+        message: "The employee already is inactive"
+    }
+
+    await deactivateEmployeeById(employeeId);
+    return;
+};
+
+export async function reactivateEmployee(employeeId) {
+    if(!employeeId) throw {
+        type: "422",
+        message: "Invalid employee id"
+    };
+
+    const employee = await getEmployeeById(employeeId);
+    if(!employee) throw {
+        type: "not found",
+        message: "Employee not found"
+    };
+
+    if(employee.is_active) throw {
+        type: "406",
+        message: "The employee already is active"
+    }
+
+    await reactivateEmployeeById(employeeId);
+}

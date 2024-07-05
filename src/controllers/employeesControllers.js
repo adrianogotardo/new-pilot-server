@@ -1,4 +1,4 @@
-import { checkDocumentAvailability, registerEmployee, getEmployees, checkIfEmployeeIsRegistered, updateEmployee } from "../services/employeesServices.js";
+import { checkDocumentAvailability, registerEmployee, getEmployees, updateEmployee, deactivateEmployee, reactivateEmployee } from "../services/employeesServices.js";
 
 export async function registerNewEmployee(req, res) {
     const timeZone = req.headers['time-zone'];
@@ -27,3 +27,14 @@ export async function updateEmployeeData(req, res) {
     return res.sendStatus(200);
 };
 
+export async function deleteEmployee(req, res) {
+    const employeeId = +req.params.id;
+    await deactivateEmployee(employeeId);
+    return res.sendStatus(200);
+}
+
+export async function reintegrateEmployee(req, res) {
+    const employeeId = +req.params.id;
+    await reactivateEmployee(employeeId);
+    return res.sendStatus(200);
+}

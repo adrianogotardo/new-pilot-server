@@ -41,7 +41,7 @@ export async function getEmployeesByCustomQuery(dbQuery) {
 };
 
 export async function updateEmployeeById(employee) {
-    const { id, name, wage, phone = null, documentNumber, pix = null, observation = null, addressId, hiredAt } = employee;
+    const { id, name, wage, phone = null, documentNumber, pix = null, observation = null, addressId } = employee;
     await prisma.employees.update({
         where: { id: id },
         data: {
@@ -52,8 +52,27 @@ export async function updateEmployeeById(employee) {
             pix,
             observation,
             address_id: addressId,
-            hired_at: hiredAt
           },
+    });
+    return;
+};
+
+export async function deactivateEmployeeById(employeeId) {
+    await prisma.employees.update({
+        where: { id: employeeId },
+        data: {
+            is_active: false,
+        },
+    });
+    return;
+};
+
+export async function reactivateEmployeeById(employeeId) {
+    await prisma.employees.update({
+        where: { id: employeeId },
+        data: {
+            is_active: true,
+        },
     });
     return;
 };
