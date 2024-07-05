@@ -37,8 +37,9 @@ export async function verifyPassword(receivedPassword, storedPassword) {
 }
 
 export function createSession(userInfo) {
-    const { name, email, role } = userInfo;
+    const { id, name, email, role } = userInfo;
     const newTokenData = {
+        id: id,
         name: name,
         email: email,
         role: role

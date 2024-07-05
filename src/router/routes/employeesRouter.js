@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { roleValidator } from "../../middlewares/roleValidatorMiddleware.js";
-import { registerNewEmployee, getEmployeesList } from "../../controllers/employeesControllers.js";
+import { timeZoneValidator } from "../../middlewares/timeZoneValidatorMiddleware.js";
+import { registerNewEmployee, getEmployeesList, updateEmployeeData } from "../../controllers/employeesControllers.js";
 
 const employeesRouter = Router();
 
 employeesRouter.use(roleValidator);
+employeesRouter.use(timeZoneValidator);
 employeesRouter.post("/", registerNewEmployee);
 employeesRouter.get("/", getEmployeesList);
-employeesRouter.put("/", (req, res) => { return res.sendStatus(200) });    // updateEmployee
-employeesRouter.delete("/", (req, res) => { return res.sendStatus(200) }); // deleteEmployee
+employeesRouter.put("/:id", updateEmployeeData);
+employeesRouter.delete("/:id", (req, res) => {return res.sendStatus(200)});
 
 export default employeesRouter;

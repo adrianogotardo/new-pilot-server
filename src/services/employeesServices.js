@@ -1,6 +1,7 @@
-import { getEmployeeByDocumentNumber, createAddress, createEmployee, selectEmployees } from "../repositories/employeesRepositories.js";
-import moment from "moment-timezone";
+import { getEmployeeByDocumentNumber, createEmployee, getEmployeesByCustomQuery, updateEmployeeById, getEmployeeById } from "../repositories/employeesRepositories.js";
+import { createAddress, updateAddressById } from "../repositories/addressesRepositories.js";
 import { dateRangeFormatter } from "../utils/dateRangeFormatter.js";
+import moment from "moment-timezone";
 
 export async function checkDocumentAvailability(documentNumber) {
     const employeeWithThisDocumentNumber = await getEmployeeByDocumentNumber(documentNumber);
@@ -15,11 +16,6 @@ export async function registerEmployee(employee, timeZone) {
     const { address } = employee;
     const newAddress = await createAddress(address);
 
-    if(!timeZone) throw {
-        type: "unprocessable entity",
-        message: "The request is missing the time zone header"
-    }
-
     employee.addressId = newAddress.id;
     employee.hiredAt = moment.tz(timeZone).format('YYYY-MM-DDTHH:mm:ssZ');
     await createEmployee(employee);
@@ -27,12 +23,7 @@ export async function registerEmployee(employee, timeZone) {
 };
 
 export async function getEmployees(startDate, endDate, isActive, timeZone) {
-    if(!timeZone) throw {
-        type: "unprocessable entity",
-        message: "The request is missing the time zone header"
-    }
-
-    let dbQuery = `SELECT e.id, e.name, e.wage, e.hired_at AT TIME ZONE 'UTC' AT TIME ZONE '${timeZone}', e.phone, e.document_number, e.pix, e.is_active, e.observation, a.street, a.number, a.complement, a.neighbourhood, a.city, a.state, a.postal_code FROM employees e LEFT JOIN addresses a ON e.address_id = a.id`;
+    let dbQuery = `SELECT e.id, e.name, e.wage, e.hired_at AT TIME ZONE 'UTC' AT TIME ZONE '${timeZone}', e.address_id, e.phone, e.document_number, e.pix, e.is_active, e.observation, a.street, a.number, a.complement, a.neighbourhood, a.city, a.state, a.postal_code FROM employees e LEFT JOIN addresses a ON e.address_id = a.id`;
     if((startDate && endDate) || isActive) {
         dbQuery += ' WHERE';
 
@@ -51,9 +42,10 @@ export async function getEmployees(startDate, endDate, isActive, timeZone) {
         };
     };
     dbQuery+= ';';
+    console.log(dbQuery);
 
-    const employeesList = await selectEmployees(dbQuery);
-    
+    const employeesList = await getEmployeesByCustomQuery(dbQuery);
+
     const employeesListWithBigIntAsString = employeesList.map(employee => ({
         ...employee,
         wage: employee.wage?.toString(),
@@ -62,4 +54,39 @@ export async function getEmployees(startDate, endDate, isActive, timeZone) {
     }));
 
     return employeesListWithBigIntAsString;
+};
+
+export async function checkIfEmployeeIsRegistered(documentNumber) {
+    const employeeWithThisDocumentNumber = await getEmployeeByDocumentNumber(documentNumber);
+    if(!employeeWithThisDocumentNumber) throw {
+        type: "not found",
+        message: "Employee not found"
+    };
+    return;
+};
+
+export async function updateEmployee(employee) {
+    const { id, address } = employee;
+    if(!id) throw {
+        type: "422",
+        message: "Invalid employee id"
+    };
+
+    const oldEmployeeInfo = await getEmployeeById(id);
+    if(!oldEmployeeInfo) throw {
+        type: "not found",
+        message: "Employee not found"
+    };
+
+    if(oldEmployeeInfo.document_number !== employee.documentNumber) throw {
+        type: "conflict",
+        message: "Document number belongs to another employee"
+    };
+
+    const { address_id } = oldEmployeeInfo;
+    const newAddress = { ...address, id: address_id };
+    await updateAddressById(newAddress);
+    const newEmployee = { ...employee, addressId: address_id };
+    await updateEmployeeById(newEmployee);
+    return;
 };
