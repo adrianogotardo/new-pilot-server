@@ -25,11 +25,11 @@ model users {
 model employees {
   id              Int         @id @default(autoincrement())
   name            String      @db.VarChar(255)
-  wage            Int
+  wage            BigInt
   hired_at        DateTime    @db.Timestamptz(6)
   address         addresses?  @relation(fields: [address_id], references: [id])
   address_id      Int?
-  phone           Int?
+  phone           BigInt?
   document_number String      @unique @db.VarChar(255)
   pix             String?     @db.VarChar(255)
   is_active       Boolean     @default(true)
@@ -44,6 +44,6 @@ model addresses {
   neighbourhood   String      @db.VarChar(255)
   city            String      @db.VarChar(255)
   state           String      @db.VarChar(255)
-  postal_code     Int
+  postal_code     BigInt
   employees       employees[]
 }

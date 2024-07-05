@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "addresses" ALTER COLUMN "postal_code" SET DATA TYPE BIGINT;
+
+-- AlterTable
+ALTER TABLE "employees" ALTER COLUMN "wage" SET DATA TYPE BIGINT,
+ALTER COLUMN "phone" SET DATA TYPE BIGINT;
