@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { roleValidator } from "../../middlewares/roleValidatorMiddleware.js";
+import { registerNewEmployee, getEmployeesList } from "../../controllers/employeesControllers.js";
 
 const employeesRouter = Router();
 
 employeesRouter.use(roleValidator);
-employeesRouter.post("/", (req, res) => { return res.sendStatus(200) });   // createEmployee
-employeesRouter.get("s", (req, res) => { return res.sendStatus(200) });    // getAllEmployees
+employeesRouter.post("/", registerNewEmployee);
+employeesRouter.get("/", getEmployeesList);
 employeesRouter.put("/", (req, res) => { return res.sendStatus(200) });    // updateEmployee
 employeesRouter.delete("/", (req, res) => { return res.sendStatus(200) }); // deleteEmployee
 
