@@ -21,7 +21,7 @@ export async function registerUser(name, email, password) {
 export async function getUserInfo(email) {
     const userWithThisEmail = await getUserByEmail(email);
     if(!userWithThisEmail) throw {
-        type: "not_found",
+        type: "not found",
         message: "There is no user registered by this email address"
     };
     return userWithThisEmail;
@@ -37,8 +37,9 @@ export async function verifyPassword(receivedPassword, storedPassword) {
 }
 
 export function createSession(userInfo) {
-    const { name, email, role } = userInfo;
+    const { id, name, email, role } = userInfo;
     const newTokenData = {
+        id: id,
         name: name,
         email: email,
         role: role

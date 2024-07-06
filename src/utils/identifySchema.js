@@ -1,12 +1,14 @@
-import { signUpSchema } from "../schemas/signUpSchema.js";
-import { signInSchema } from "../schemas/signInSchema.js";
+import { signUpSchema, signInSchema } from "../schemas/authenticationSchemas.js";
+import { newEmployeeSchema } from "../schemas/employeesSchemas.js";
 
 export function identifySchema(route) {
     switch(route) {
-        case "/sign/up":
+        case "POST/sign/up":
             return signUpSchema;
-        case "/sign/in":
+        case "POST/sign/in":
             return signInSchema;
+        case "POST/employee":
+            return newEmployeeSchema;
         default:
             return null;
     }

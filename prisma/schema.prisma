@@ -8,16 +8,42 @@ datasource db {
 }
 
 model roles {
-  id    Int     @id @default(autoincrement())
-  name  String  @unique
-  users users[]
+  id              Int         @id @default(autoincrement())
+  name            String      @unique
+  users           users[]
 }
 
 model users {
-  id       Int        @id @default(autoincrement())
-  name     String
-  role     roles      @relation(fields: [role_id], references: [id])
-  role_id  Int        @default(1)
-  email    String     @unique
-  password String
+  id              Int         @id @default(autoincrement())
+  name            String
+  role            roles       @relation(fields: [role_id], references: [id])
+  role_id         Int         @default(1)
+  email           String      @unique
+  password        String
+}
+
+model employees {
+  id              Int         @id @default(autoincrement())
+  name            String      @db.VarChar(255)
+  wage            BigInt
+  hired_at        DateTime    @db.Timestamptz(6)
+  address         addresses  @relation(fields: [address_id], references: [id])
+  address_id      Int
+  phone           BigInt?
+  document_number String      @unique @db.VarChar(255)
+  pix             String?     @db.VarChar(255)
+  is_active       Boolean     @default(true)
+  observation     String?     @db.Text
+}
+
+model addresses {
+  id              Int         @id @default(autoincrement())
+  street          String      @db.VarChar(255)
+  number          String      @db.VarChar(255)
+  complement      String      @db.VarChar(255)
+  neighbourhood   String      @db.VarChar(255)
+  city            String      @db.VarChar(255)
+  state           String      @db.VarChar(255)
+  postal_code     BigInt
+  employees       employees[]
 }
