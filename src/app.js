@@ -2,10 +2,8 @@ import express, { json } from "express";
 import cors from "cors";
 import "express-async-errors";
 import router from "./router/router.js";
-import { errorHandler } from "./middlewares/errorHandlerMiddleware.js";
 import dotenv from "dotenv";
 import { checkCryptSalt } from "./utils/checkCryptSalt.js"
-import { schemaValidator } from "./middlewares/schemaValidatorMiddleware.js";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
