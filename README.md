@@ -117,3 +117,71 @@
 		- Success: status 201 and an array of employee objects.
 		- Unauthorized user (inappropriate role): status 401.
 		- Incomplete date range: status 422 and a message.
+<br />
+
+ - `PUT/employee/:id`: this route is used to update the data of a employee registered in the application.
+	- Expected headers:
+		```
+		{
+			"Authentication": "token"                      // string token generated on user login
+		}
+		```
+	- Expected body (same as in POST):
+	 	```
+		{
+			"name": "Employee Smith",                      // string
+			"wage": 150000,                                // integer (actual wage * 100)
+			"phone": 5522988888888,                        // optional integer
+			"documentNumber": "12345678910",               // string
+			"pix": "smith.mail@provider.com",              // optional string
+			"observation": "first job",                    // optional string
+			"address": {
+				"street": "Flowers Street",            // string
+				"number": "Bloco A",                   // string
+				"complement": "Yellow gate",           // optional string
+				"neighbourhood": "Centro",             // string
+				"city": "Santos",                      // string
+				"state": "São Paulo",                  // string
+				"postalCode": 12345678                 // integer
+			}
+		}
+		```
+	- Possible responses:
+		- Succes: status 200.
+		- Unauthorized user (inappropriate role): status 401.
+		- Incompatible headers: status 422 and a message indicating what's wrong.
+		- Incompatible body: status 422 and a message indicating what's wrong.
+		- Incompatible query param (:id): status 422 and a message indicating what's wrong.
+		- User not found: status 404.
+		- Document number informed in body belongs to another employee: status 409.
+<br />
+
+ - `PUT/employee/:id/reactivate`: this route is used to reactivate an employee that has been previously deactivated.
+	- Expected headers:
+		```
+		{
+			"Authentication": "token"                      // string token generated on user login
+		}
+		```
+	- Possible responses:
+		- Succes: status 200.
+		- Unauthorized user (inappropriate role): status 401.
+		- Incompatible query param (:id): status 422 and a message indicating what's wrong.
+		- User not found: status 404.
+		- User is already active: status 406.
+<br />
+
+ - `DELETE/employee/:id`: this route is used to deactivate an employee that has been previously active.
+	- Expected headers:
+		```
+		{
+			"Authentication": "token"                      // string token generated on user login
+		}
+		```
+	- Possible responses:
+		- Succes: status 200.
+		- Unauthorized user (inappropriate role): status 401.
+		- Incompatible query param (:id): status 422 and a message indicating what's wrong.
+		- User not found: status 404.
+		- User is already inactive: status 406.
+<br />
