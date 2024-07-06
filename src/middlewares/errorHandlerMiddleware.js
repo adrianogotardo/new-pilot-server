@@ -26,6 +26,9 @@ export function errorHandler(error, req, res, next) {
         case "jwt malformed":
             return res.status(401).send(message || "The provided token doesn't have three components (delimited by a '.')");
 
+        case "forbidden":
+            return res.status(406).send(message || "Forbidden operation");
+
         case "internal server error":
             return res.status(500).send(message || "Internal Server Error");
 

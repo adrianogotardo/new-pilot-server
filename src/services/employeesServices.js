@@ -92,7 +92,7 @@ export async function updateEmployee(employee) {
 
 export async function deactivateEmployee(employeeId) {
     if(!employeeId) throw {
-        type: "422",
+        type: "unprocessable entity",
         message: "Invalid employee id"
     };
 
@@ -103,7 +103,7 @@ export async function deactivateEmployee(employeeId) {
     };
 
     if(!employee.is_active) throw {
-        type: "406",
+        type: "forbidden",
         message: "The employee already is inactive"
     }
 
@@ -113,7 +113,7 @@ export async function deactivateEmployee(employeeId) {
 
 export async function reactivateEmployee(employeeId) {
     if(!employeeId) throw {
-        type: "422",
+        type: "unprocessable entity",
         message: "Invalid employee id"
     };
 
@@ -124,7 +124,7 @@ export async function reactivateEmployee(employeeId) {
     };
 
     if(employee.is_active) throw {
-        type: "406",
+        type: "forbidden",
         message: "The employee already is active"
     }
 
