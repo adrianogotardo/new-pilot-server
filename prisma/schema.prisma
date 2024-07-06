@@ -8,42 +8,170 @@ datasource db {
 }
 
 model roles {
-  id              Int         @id @default(autoincrement())
-  name            String      @unique
-  users           users[]
+  id                             Int             @id @default(autoincrement())
+  name                           String          @unique
+  users                          users[]
 }
 
 model users {
-  id              Int         @id @default(autoincrement())
-  name            String
-  role            roles       @relation(fields: [role_id], references: [id])
-  role_id         Int         @default(1)
-  email           String      @unique
-  password        String
+  id                             Int             @id @default(autoincrement())
+  name                           String
+  role                           roles           @relation(fields: [role_id], references: [id])
+  role_id                        Int             @default(1)
+  email                          String          @unique
+  password                       String
 }
 
 model employees {
-  id              Int         @id @default(autoincrement())
-  name            String      @db.VarChar(255)
-  wage            BigInt
-  hired_at        DateTime    @db.Timestamptz(6)
-  address         addresses  @relation(fields: [address_id], references: [id])
-  address_id      Int
-  phone           BigInt?
-  document_number String      @unique @db.VarChar(255)
-  pix             String?     @db.VarChar(255)
-  is_active       Boolean     @default(true)
-  observation     String?     @db.Text
+  id                             Int             @id @default(autoincrement())
+  name                           String          @db.VarChar(255)
+  wage                           BigInt
+  hired_at                       DateTime        @db.Timestamptz(6)
+  address                        addresses       @relation(fields: [address_id], references: [id])
+  address_id                     Int
+  phone                          BigInt?
+  document_number                String          @unique @db.VarChar(255)
+  pix                            String?         @db.VarChar(255)
+  is_active                      Boolean         @default(true)
+  observation                    String?         @db.Text
+  employees_attendances          employees_attendances[]
+  paychecks                      paychecks[]
+  loans                          loans[]
+}
+
+model employees_attendances {
+  id                             Int             @id @default(autoincrement())
+  employee                       employees       @relation(fields: [employee_id], references: [id])
+  employee_id                    Int
+  working_site                   working_sites   @relation(fields: [working_site_id], references: [id])
+  working_site_id                Int
+  date                           DateTime        @db.Timestamptz(6)
+}
+
+model paychecks {
+  id                             Int             @id @default(autoincrement())
+  employee                       employees       @relation(fields: [employees_id], references: [id])
+  employees_id                   Int
+  payed_at                       DateTime        @db.Timestamptz(6)
+  start_date_range               DateTime        @db.Timestamptz(6)
+  end_date_rage                  DateTime        @db.Timestamptz(6)
+  value                          BigInt
+  loans                          loans[]
+}
+
+model loans {
+  id                             Int             @id @default(autoincrement())
+  employee                       employees       @relation(fields: [employee_id], references: [id])
+  employee_id                    Int
+  value                          BigInt
+  created_at                     DateTime        @db.Timestamptz(6)
+  paycheck                       paychecks       @relation(fields: [paycheck_id], references: [id])
+  paycheck_id                    Int
 }
 
 model addresses {
-  id              Int         @id @default(autoincrement())
-  street          String      @db.VarChar(255)
-  number          String      @db.VarChar(255)
-  complement      String      @db.VarChar(255)
-  neighbourhood   String      @db.VarChar(255)
-  city            String      @db.VarChar(255)
-  state           String      @db.VarChar(255)
-  postal_code     BigInt
-  employees       employees[]
+  id                             Int             @id @default(autoincrement())
+  street                         String          @db.VarChar(255)
+  number                         String          @db.VarChar(255)
+  complement                     String          @db.VarChar(255)
+  neighbourhood                  String          @db.VarChar(255)
+  city                           String          @db.VarChar(255)
+  state                          String          @db.VarChar(255)
+  postal_code                    BigInt
+  employees                      employees[]
+  working_sites                  working_sites[]
+  stores                         stores[]
+}
+
+model working_sites {
+  id                             Int             @id @default(autoincrement())
+  name                           String          @db.VarChar(255)
+  registration_number            BigInt          @unique
+  is_archived                    Boolean         @default(false)
+  address                        addresses       @relation(fields: [address_id], references: [id])
+  address_id                     Int
+  services                       services[]
+  incomes                        incomes[]
+  orders                         orders[]
+  measurements                   measurements[]
+  employees_attendances          employees_attendances[]
+}
+
+model services {
+  id                             Int             @id @default(autoincrement())
+  name                           String          @db.VarChar(255)
+  working_site                   working_sites   @relation(fields: [working_site_id], references: [id])
+  working_site_id                Int
+  incidence                      Int
+  approximate_progress           Int             @default(0)
+  estimated_cost                 BigInt
+  estimated_start_date           DateTime        @db.Timestamptz(6)
+  estimated_end_date             DateTime        @db.Timestamptz(6)
+  real_start_date                DateTime        @db.Timestamptz(6)
+  real_end_date                  DateTime        @db.Timestamptz(6)
+  ordered_items                  ordered_items[]
+  measurements_services          measurements_services[]
+}
+
+model incomes {
+  id                             Int             @id @default(autoincrement())
+  name                           String          @db.VarChar(255)
+  working_site                   working_sites   @relation(fields: [working_site_id], references: [id])
+  working_site_id                Int
+  value                          BigInt
+  received_at                    DateTime        @db.Timestamptz(6)
+}
+
+model stores {
+  id                             Int             @id @default(autoincrement())
+  name                           String          @db.VarChar(255)
+  address                        addresses       @relation(fields: [address_id], references: [id])
+  address_id                     Int
+  phone                          BigInt?
+  email                          String?         @db.VarChar(255)
+  orders                         orders[]
+}
+
+model orders {
+  id                             Int             @id @default(autoincrement())
+  name                           String          @db.VarChar(255)
+  working_site                   working_sites   @relation(fields: [working_site_id], references: [id])
+  working_site_id                Int
+  store                          stores          @relation(fields: [store_id], references: [id])
+  store_id                       Int
+  created_at                     DateTime        @db.Timestamptz(6)
+  cancelled_at                   DateTime        @db.Timestamptz(6)
+  value                          BigInt
+  negotiated_value               BigInt
+  cash_value                     BigInt
+  financed_value                 BigInt
+  observation                    String?         @db.Text()
+  ordered_itens                  ordered_items[]
+}
+
+model ordered_items {
+  id                             Int             @id @default(autoincrement())
+  name                           String          @db.VarChar(255)
+  value                          BigInt
+  service                        services        @relation(fields: [service_id], references: [id])
+  service_id                     Int
+  order                          orders          @relation(fields: [order_id], references: [id])
+  order_id                       Int
+}
+
+model measurements {
+  id                             Int             @id @default(autoincrement())
+  working_site                   working_sites   @relation(fields: [working_site_id], references: [id])
+  working_site_id                Int
+  date                           DateTime        @db.Timestamptz(6)
+  measurements_services          measurements_services[]
+}
+
+model measurements_services {
+  id                             Int             @id @default(autoincrement())
+  measurement                    measurements    @relation(fields: [measurement_id], references: [id])
+  measurement_id                 Int
+  service                        services        @relation(fields: [servide_id], references: [id])
+  servide_id                     Int
+  required_conclusion_percentage Int
 }
