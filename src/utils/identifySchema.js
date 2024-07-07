@@ -1,5 +1,6 @@
 import { signUpSchema, signInSchema } from "../schemas/authenticationSchemas.js";
 import { newEmployeeSchema } from "../schemas/employeesSchemas.js";
+import { newWorkingSiteSchema } from "../schemas/workingSitesSchemas.js";
 
 export function identifySchema(route) {
     switch(route) {
@@ -9,6 +10,8 @@ export function identifySchema(route) {
             return signInSchema;
         case "POST/employee":
             return newEmployeeSchema;
+        case "POST/site":
+            return newWorkingSiteSchema;
         default:
             return null;
     }

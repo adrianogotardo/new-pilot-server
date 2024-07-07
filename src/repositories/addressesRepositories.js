@@ -1,8 +1,8 @@
 import prisma from "../database.js";
 
-export async function createAddress(address) {
+export async function createAddress(address, transactionClient) {
     const { street, number, complement = null, neighbourhood, city, state, postalCode } = address;
-    const newAddress = await prisma.addresses.create({
+    const operationDetails = {
         data: {
             street: street,
             number: number,
@@ -12,7 +12,13 @@ export async function createAddress(address) {
             state: state,
             postal_code: postalCode,
         },
-    });
+    }
+    let newAddress;
+    if(transactionClient) {
+        newAddress = await transactionClient.addresses.create(operationDetails);
+    } else {
+        newAddress = await prisma.addresses.create(operationDetails);
+    };
     return newAddress;
 };
 

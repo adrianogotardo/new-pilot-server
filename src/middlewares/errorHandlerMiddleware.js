@@ -33,6 +33,7 @@ export function errorHandler(error, req, res, next) {
             return res.status(500).send(message || "Internal Server Error");
 
         default:
+            console.log("Erro: ", error);
             return res.status(500).send("System error: " + message);
     }
 }

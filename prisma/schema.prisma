@@ -107,8 +107,8 @@ model services {
   estimated_cost                 BigInt
   estimated_start_date           DateTime        @db.Timestamptz(6)
   estimated_end_date             DateTime        @db.Timestamptz(6)
-  real_start_date                DateTime        @db.Timestamptz(6)
-  real_end_date                  DateTime        @db.Timestamptz(6)
+  real_start_date                DateTime?       @db.Timestamptz(6)
+  real_end_date                  DateTime?       @db.Timestamptz(6)
   ordered_items                  ordered_items[]
   measurements_services          measurements_services[]
 }
@@ -140,7 +140,7 @@ model orders {
   store                          stores          @relation(fields: [store_id], references: [id])
   store_id                       Int
   created_at                     DateTime        @db.Timestamptz(6)
-  cancelled_at                   DateTime        @db.Timestamptz(6)
+  cancelled_at                   DateTime?       @db.Timestamptz(6)
   value                          BigInt
   negotiated_value               BigInt
   cash_value                     BigInt
@@ -171,7 +171,7 @@ model measurements_services {
   id                             Int             @id @default(autoincrement())
   measurement                    measurements    @relation(fields: [measurement_id], references: [id])
   measurement_id                 Int
-  service                        services        @relation(fields: [servide_id], references: [id])
-  servide_id                     Int
+  service                        services        @relation(fields: [service_id], references: [id])
+  service_id                     Int
   required_conclusion_percentage Int
 }
