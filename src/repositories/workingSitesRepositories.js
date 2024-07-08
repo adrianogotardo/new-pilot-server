@@ -104,3 +104,59 @@ export async function getServicesByWorkingSiteId(workingSiteId, transactionClien
     };
     return service;
 };
+
+/*
+export async function getWorkingSiteById(id, transactionClient) {
+    const operationDetails = {
+        where: {
+            id
+        }
+    }
+    let workingSite;
+    if(transactionClient) {
+        workingSite = await transactionClient.working_sites.findUnique(operationDetails);
+    } else {
+        workingSite = await prisma.working_sites.findUnique(operationDetails);
+    };
+    return workingSite;
+};
+
+export async function updateWorkingSiteById(newWorkingSite, transactionClient) {
+    const { id, name, registrationNumber, addressId } = newWorkingSite;
+    const operationDetails = {
+        where: { id: id },
+        data: {
+            name,
+            registration_number: registrationNumber,
+            address_id: addressId
+        },
+    }
+    if(transactionClient) {
+        await transactionClient.working_sites.update(operationDetails);
+    } else {
+        await prisma.working_sites.update(operationDetails);
+    }
+    return;
+};
+
+export async function updateServiceById(newService, transactionClient) {
+    const { id, name, incidence, estimatedCost, estimatedStartDate, estimatedEndDate, workingSiteId } = newService;
+    const operationDetails = {
+        where: { id: id },
+        data: {
+            name,
+            incidence,
+            working_site_id: workingSiteId,
+            estimated_cost: estimatedCost,
+            estimated_start_date: estimatedStartDate,
+            estimated_end_date: estimatedEndDate
+        },
+    }
+    if(transactionClient) {
+        await transactionClient.services.update(operationDetails);
+    } else {
+        await prisma.services.update(operationDetails);
+    };
+    return;
+}
+    */
