@@ -74,7 +74,7 @@
 		- Incompatible body: status 422 and a message indicating what's wrong.
 <br />
 
- - `GET/employee/all`: this route is used to get a list of registered employees and can filter the results by date range and/or activity status. It also allows the user to specify it the response should includes the address details of each employee or not.
+ - `GET/employee/all`: this route is used to get a list of registered employees and can filter the results by date range and/or activity status.
 	- Expected headers:
 		```
 		{
@@ -84,9 +84,9 @@
 		```
 	- Possible query params:
 		- `stardDate` and `endDate`: limit values of a date range to filter the selection by date. They must be following the ISO 8601 format.
-			- Example: `get/employee?stardDate=2023-01-01T00:00:00+03:00&endDate=2023-12-31T23:59:59-03:00`
+			- Example: `get/employee/all?stardDate=2023-01-01T00:00:00+03:00&endDate=2023-12-31T23:59:59-03:00`
 		- `isActive`: boolean value converted to string. It will determine if the response should get only active or only inactive employees.
-			- Example: `get/employee?isActive=false`
+			- Example: `get/employee/all?isActive=false`
 	- Example of response in case of succeeded request:
 		```
 		[
@@ -184,4 +184,38 @@
 		- Incompatible query param (:id): status 422 and a message indicating what's wrong.
 		- User not found: status 404.
 		- User is already inactive: status 406.
+
+## Orders
+<br />
+
+ - `GET/order/all`: this route is used to get a list of registered orders and can filter the results by date range, store id and/or working site id.
+	- Expected headers:
+		```
+		{
+			"Authentication": "token",                     // string token generated on user login
+			"time-zone": "/America/Sao_Paulo"              // string (timezone in wich the front-end is operating)
+		}
+		```
+	- Possible query params:
+		- `stardDate` and `endDate`: limit values of a date range to filter the selection by date. They must be following the ISO 8601 format.
+			- Example: `get/order/all?stardDate=2023-01-01T00:00:00+03:00&endDate=2023-12-31T23:59:59-03:00`
+		- `storeId`: integer value converted to string. It will determine if the response should get only orders related to a certain store.
+			- Example: `get/order/all?storeId=12`
+		- `workingSiteId`: integer value converted to string. It will determine if the response should get only orders related to a certain working site.
+			- Example: `get/order/all?workingSiteId=9`
+		- Example of response in case of succeeded request:
+		```
+		[
+			{
+				// objeto aqui
+			},
+			// (...)
+		]
+		```
+	- Possible responses:
+		- Success: status 201 and an array of order objects.
+		- Unauthorized user (inappropriate role): status 401.
+		- Incomplete date range: status 422 and a message.
+		- Invalid store or working site id: status 422 and a message detailing which one.
+		- Store or working site was not found: status 404 and a message detailing wich one.
 <br />
