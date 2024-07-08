@@ -74,7 +74,7 @@
 		- Incompatible body: status 422 and a message indicating what's wrong.
 <br />
 
- - `GET/employee`: this route is used to get a list of registered employees and can filter the results by date range and/or activity status. It also allows the user to specify it the response should includes the address details of each employee or not.
+ - `GET/employee/all`: this route is used to get a list of registered employees and can filter the results by date range and/or activity status. It also allows the user to specify it the response should includes the address details of each employee or not.
 	- Expected headers:
 		```
 		{

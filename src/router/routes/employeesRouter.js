@@ -7,7 +7,7 @@ const employeesRouter = Router();
 
 employeesRouter.use(roleValidator);
 employeesRouter.post("/", timeZoneValidator, registerNewEmployee);
-employeesRouter.get("/", timeZoneValidator, getEmployeesList);
+employeesRouter.get("/all", timeZoneValidator, getEmployeesList);
 employeesRouter.put("/:id", updateEmployeeData);
 employeesRouter.put("/reactivate/:id", reintegrateEmployee);
 employeesRouter.delete("/:id", deleteEmployee);
