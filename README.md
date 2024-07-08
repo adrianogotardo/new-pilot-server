@@ -156,7 +156,7 @@
 		- Document number informed in body belongs to another employee: status 409.
 <br />
 
- - `PUT/employee/:id/reactivate`: this route is used to reactivate an employee that has been previously deactivated.
+ - `PUT/employee/reactivate/:id`: this route is used to reactivate an employee that has been previously deactivated.
 	- Expected headers:
 		```
 		{
