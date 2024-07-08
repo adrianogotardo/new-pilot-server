@@ -31,9 +31,9 @@ export async function getAddressById(addressId) {
     return address;
 };
 
-export async function updateAddressById(address) {
+export async function updateAddressById(address, transactionClient) {
     const { id, street, number, complement = null, neighbourhood, city, state, postalCode } = address;
-    await prisma.addresses.update({
+    const operationDetails = {
         where: { id: id },
         data: {
             street: street,
@@ -44,6 +44,11 @@ export async function updateAddressById(address) {
             state: state,
             postal_code: postalCode,
         },
-    });
+    }
+    if(transactionClient) {
+        await transactionClient.addresses.update(operationDetails);
+    } else {
+        await prisma.addresses.update(operationDetails);
+    }
     return;
 };

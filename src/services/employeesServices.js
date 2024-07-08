@@ -2,6 +2,7 @@ import { getEmployeeByDocumentNumber, createEmployee, getEmployeesByCustomQuery,
 import { createAddress, updateAddressById } from "../repositories/addressesRepositories.js";
 import { dateRangeFormatter } from "../utils/dateRangeFormatter.js";
 import moment from "moment-timezone";
+import prisma from "../database.js";
 
 export async function checkDocumentAvailability(documentNumber) {
     const employeeWithThisDocumentNumber = await getEmployeeByDocumentNumber(documentNumber);
@@ -14,11 +15,13 @@ export async function checkDocumentAvailability(documentNumber) {
 
 export async function registerEmployee(employee, timeZone) {
     const { address } = employee;
-    const newAddress = await createAddress(address);
 
-    employee.addressId = newAddress.id;
-    employee.hiredAt = moment.tz(timeZone).format('YYYY-MM-DDTHH:mm:ssZ');
-    await createEmployee(employee);
+    await prisma.$transaction(async (transactionClient) => {
+        const newAddress = await createAddress(address, transactionClient);
+        employee.addressId = newAddress.id;
+        employee.hiredAt = moment.tz(timeZone).format('YYYY-MM-DDTHH:mm:ssZ');
+        await createEmployee(employee, transactionClient);
+    });
     return;
 };
 
@@ -67,7 +70,7 @@ export async function checkIfEmployeeIsRegistered(documentNumber) {
 export async function updateEmployee(employee) {
     const { id, address } = employee;
     if(!id) throw {
-        type: "422",
+        type: "unprocessable entity",
         message: "Invalid employee id"
     };
 
@@ -82,11 +85,17 @@ export async function updateEmployee(employee) {
         message: "Document number belongs to another employee"
     };
 
-    const { address_id } = oldEmployeeInfo;
-    const newAddress = { ...address, id: address_id };
-    await updateAddressById(newAddress);
-    const newEmployee = { ...employee, addressId: address_id };
-    await updateEmployeeById(newEmployee);
+    await prisma.$transaction(async (transactionClient) => {
+        const { address_id } = oldEmployeeInfo;
+        const newAddress = { ...address, id: address_id };
+        await updateAddressById(newAddress, transactionClient);
+
+        const newEmployee = { ...employee, addressId: address_id };
+        console.log("employee:", employee);
+        console.log("newEmployee:", newEmployee);
+        await updateEmployeeById(newEmployee, transactionClient);
+    });
+
     return;
 };
 

@@ -2,7 +2,7 @@ import prisma from "../database.js";
 
 export async function createEmployee(employee) {
     const { name, wage, phone = null, documentNumber, pix = null, observation = null, addressId, hiredAt } = employee;
-    const newEmployee = await prisma.employees.create({
+    const operationDetails = {
         data: {
             name,
             wage,
@@ -13,7 +13,10 @@ export async function createEmployee(employee) {
             address_id: addressId,
             hired_at: hiredAt
         },
-    });
+    }
+    let newEmployee;
+    if(transactionClient) await transactionClient.employees.create(operationDetails);
+    else await prisma.employees.create(operationDetails);
     return newEmployee;
 };
 
@@ -40,9 +43,9 @@ export async function getEmployeesByCustomQuery(dbQuery) {
     return employeesList;
 };
 
-export async function updateEmployeeById(employee) {
+export async function updateEmployeeById(employee, transactionClient) {
     const { id, name, wage, phone = null, documentNumber, pix = null, observation = null, addressId } = employee;
-    await prisma.employees.update({
+    const operationDetails = {
         where: { id: id },
         data: {
             name,
@@ -53,7 +56,12 @@ export async function updateEmployeeById(employee) {
             observation,
             address_id: addressId,
           },
-    });
+    }
+    if(transactionClient) {
+        await transactionClient.employees.update(operationDetails);
+    } else {
+        await prisma.employees.update(operationDetails);
+    }
     return;
 };
 

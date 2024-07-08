@@ -9,7 +9,7 @@ employeesRouter.use(roleValidator);
 employeesRouter.post("/", timeZoneValidator, registerNewEmployee);
 employeesRouter.get("/", timeZoneValidator, getEmployeesList);
 employeesRouter.put("/:id", updateEmployeeData);
-employeesRouter.put("/:id/reactivate", reintegrateEmployee);
+employeesRouter.put("/reactivate/:id", reintegrateEmployee);
 employeesRouter.delete("/:id", deleteEmployee);
 
 export default employeesRouter;
