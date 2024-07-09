@@ -15,18 +15,20 @@ export async function checkDocumentAvailability(documentNumber) {
 
 export async function registerEmployee(employee, timeZone) {
     const { address } = employee;
+    let newEmployee;
 
     await prisma.$transaction(async (transactionClient) => {
         const newAddress = await createAddress(address, transactionClient);
         employee.addressId = newAddress.id;
         employee.hiredAt = moment.tz(timeZone).format('YYYY-MM-DDTHH:mm:ssZ');
-        await createEmployee(employee, transactionClient);
+        newEmployee = await createEmployee(employee, transactionClient);
+        newEmployee.address = newAddress;
     });
-    return;
+    return newEmployee;
 };
 
 export async function getEmployees(startDate, endDate, isActive, timeZone) {
-    let dbQuery = `SELECT e.id, e.name, e.wage, e.hired_at AT TIME ZONE 'UTC' AT TIME ZONE '${timeZone}', e.address_id, e.phone, e.document_number, e.pix, e.is_active, e.observation, a.street, a.number, a.complement, a.neighbourhood, a.city, a.state, a.postal_code FROM employees e LEFT JOIN addresses a ON e.address_id = a.id`;
+    let dbQuery = `SELECT e.id, e.name, e.wage, e.hired_at AT TIME ZONE 'UTC' AT TIME ZONE '${timeZone}' AS "hiredAt", e.address_id AS "addressId", e.phone, e.document_number, e.pix, e.is_active AS "isActive", e.observation, a.street, a.number, a.complement, a.neighbourhood, a.city, a.state, a.postal_code AS "postalCode" FROM employees e LEFT JOIN addresses a ON e.address_id = a.id`;
     if((startDate && endDate) || isActive) {
         dbQuery += ' WHERE';
 
@@ -48,14 +50,7 @@ export async function getEmployees(startDate, endDate, isActive, timeZone) {
 
     const employeesList = await getEmployeesByCustomQuery(dbQuery);
 
-    const employeesListWithBigIntAsString = employeesList.map(employee => ({
-        ...employee,
-        wage: employee.wage?.toString(),
-        phone: employee.phone?.toString(),
-        postal_code: employee.postal_code?.toString(),
-    }));
-
-    return employeesListWithBigIntAsString;
+    return employeesList;
 };
 
 export async function checkIfEmployeeIsRegistered(documentNumber) {
@@ -91,8 +86,6 @@ export async function updateEmployee(employee) {
         await updateAddressById(newAddress, transactionClient);
 
         const newEmployee = { ...employee, addressId: address_id };
-        console.log("employee:", employee);
-        console.log("newEmployee:", newEmployee);
         await updateEmployeeById(newEmployee, transactionClient);
     });
 
@@ -114,7 +107,7 @@ export async function deactivateEmployee(employeeId) {
     if(!employee.is_active) throw {
         type: "forbidden",
         message: "The employee already is inactive"
-    }
+    };
 
     await deactivateEmployeeById(employeeId);
     return;

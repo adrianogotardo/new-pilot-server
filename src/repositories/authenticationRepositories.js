@@ -12,12 +12,22 @@ export async function getUserByEmail(email) {
     return user;
 };
 
-export async function createUser(name, email, password) {
+export async function getIdOfSpecificRole(roleName) {
+    const role = await prisma.roles.findUnique({
+        where: {
+            name: roleName,
+        }
+    });
+    return role.id;
+};
+
+export async function createUser(name, email, password, roleId) {
     await prisma.users.create({
         data: {
           name: name,
           email: email,
-          password: password
+          password: password,
+          role_id: roleId
         },
     });
     return;

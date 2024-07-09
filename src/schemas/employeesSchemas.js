@@ -8,5 +8,6 @@ export const newEmployeeSchema = Joi.object({
     documentNumber: Joi.string().required(),
     pix: Joi.string().optional().allow(null, ''),
     observation: Joi.string().optional().allow(null, ''),
+    isActive: Joi.boolean().optional(),
     address: addressSchema.required()
 });

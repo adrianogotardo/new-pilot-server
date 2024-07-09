@@ -12,9 +12,12 @@ export function identifySchema(route) {
     if(route.startsWith("POST/employee")) {
         return newEmployeeSchema;
     };
+    if(route.startsWith("PUT/employee/reactivate")){
+        return null;
+    };
     if(route.startsWith("PUT/employee")) {
         return newEmployeeSchema;
-    }
+    };
     if(route.startsWith("POST/site")) {
         return newWorkingSiteSchema;
     };

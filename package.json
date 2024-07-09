@@ -8,10 +8,11 @@
     "seed": "node prisma/seed.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon ./src/app.js",
+    "test-coverage": "cross-env NODE_OPTIONS='$NODE_OPTIONS --experimental-vm-modules' NODE_ENV=test jest --coverage",
+    "test": "cross-env NODE_OPTIONS='$NODE_OPTIONS --experimental-vm-modules' NODE_ENV=test jest",
+    "dev": "npx nodemon ./src/server.js",
     "build": "npx prisma generate && npx prisma migrate deploy",
-    "start": "sudo forever start ./src/app.js",
+    "start": "sudo forever start ./src/server.js",
     "migrate": "npx prisma migrate dev",
     "seed": "npx prisma db seed"
   },
@@ -19,8 +20,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^2.0.22",
-    "prisma": "^4.16.2"
+    "prisma": "^4.16.2",
+    "supertest": "^7.0.0"
   },
   "dependencies": {
     "@prisma/client": "^4.16.2",

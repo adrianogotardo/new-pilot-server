@@ -1,7 +1,7 @@
 import prisma from "../database.js";
 
-export async function createEmployee(employee) {
-    const { name, wage, phone = null, documentNumber, pix = null, observation = null, addressId, hiredAt } = employee;
+export async function createEmployee(employee, transactionClient) {
+    const { name, wage, phone = null, documentNumber, pix = null, observation = null, addressId, hiredAt, isActive } = employee;
     const operationDetails = {
         data: {
             name,
@@ -11,12 +11,13 @@ export async function createEmployee(employee) {
             pix,
             observation,
             address_id: addressId,
-            hired_at: hiredAt
+            hired_at: hiredAt,
+            is_active: isActive
         },
     }
     let newEmployee;
-    if(transactionClient) await transactionClient.employees.create(operationDetails);
-    else await prisma.employees.create(operationDetails);
+    if(transactionClient) newEmployee = await transactionClient.employees.create(operationDetails);
+    else newEmployee = await prisma.employees.create(operationDetails);
     return newEmployee;
 };
 

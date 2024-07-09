@@ -1,6 +1,17 @@
-import { getUserByEmail, createUser } from "../repositories/authenticationRepositories.js";
+import { getUserByEmail, getIdOfSpecificRole, createUser } from "../repositories/authenticationRepositories.js";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
+
+export async function checkIfUserStillExists(email) {
+    const userFromDatabase = await getUserByEmail(email);
+    if (!userFromDatabase) {
+        throw { 
+            type: "invalid token", 
+            message: "The provided token doesn't correspond to any registered user"
+        };
+    };
+    return;
+};
 
 export async function checkEmailAvailability(email) {
     const userWithThisEmail = await getUserByEmail(email);
@@ -14,7 +25,8 @@ export async function checkEmailAvailability(email) {
 export async function registerUser(name, email, password) {
     const salt = +process.env.BCRYPT_SALT;
     password = await bcrypt.hash(password, salt);
-    await createUser(name, email, password);
+    const idOfTheLowestRole = await getIdOfSpecificRole("basic");
+    await createUser(name, email, password, idOfTheLowestRole);
     return;
 };
 
@@ -34,7 +46,7 @@ export async function verifyPassword(receivedPassword, storedPassword) {
         message: "Incorrect password. Please try again"
     };
     return;
-}
+};
 
 export function createSession(userInfo) {
     const { id, name, email, role } = userInfo;
@@ -47,4 +59,4 @@ export function createSession(userInfo) {
     const tokensSecret = process.env.SERVER_SECRET;
     const newToken = jwt.sign(newTokenData, tokensSecret);
     return newToken;
-}
+};
