@@ -225,6 +225,49 @@ describe('POST/site', () => {
 
 describe('POST/site/income', () => {
 
+    it('should get status 401 for headers missing an authorization token', async () => {
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteid = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post('/site/income')
+            .set({ 'time-zone': `${timeZone}` })
+            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid, value: 5000000 });
+        const responseText = "The request is missing the authorization header";
+        expect(res.statusCode).toEqual(401);
+        expect(res.text).toEqual(responseText);
+    });
+
+    it('should get status 401 for authorization token being malformed', async () => {
+        const malformedToken = rootUser.token.replace(/\./g, '');
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteid = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post('/site/income')
+            .set({ 'Authorization': `Bearer ${malformedToken}`, 'time-zone': `${timeZone}` })
+            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid, value: 5000000 });
+        const responseText = "The provided token doesn't have three components (delimited by a '.')";
+        expect(res.statusCode).toEqual(401);
+        expect(res.text).toEqual(responseText);
+    });
+
+    it('should get status 401 for user not having permission to complete this operation', async () => {
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteid = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post('/site/income')
+            .set({ 'Authorization': `Bearer ${basicUser.token}`, 'time-zone': `${timeZone}` })
+            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid, value: 5000000 });
+        const responseText = "The user lacks permission to perform this operation";
+        expect(res.statusCode).toEqual(401);
+        expect(res.text).toEqual(responseText);
+    });
+
     it('should get status 422 for incorrect body', async () => {
         const workingSitesList = await request(app)
             .get('/site/all')
