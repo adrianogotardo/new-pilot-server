@@ -1,3 +1,4 @@
+import { isValidDateString } from "../utils/isValidDateString.js";
 import { getOrders } from "../services/ordersServices.js";
 
 export async function getOrdersList(req, res) {
@@ -7,10 +8,10 @@ export async function getOrdersList(req, res) {
         type: 'unprocessable entity',
         message: 'Date range is incomplete'
     };
+    if((startDate && endDate) && (!isValidDateString(startDate) || !isValidDateString(endDate))) throw {
+        type: 'unprocessable entity',
+        message: 'Invalid date. Please make sure all date values follow the ISO 8601 format ("YYYY-MM-DDTHH:mm:ssZ")'
+    };
     const ordersList = await getOrders(startDate, endDate, storeId, workingSiteId, timeZone);
     return res.status(200).send(ordersList);
 };
-
-export async function getOneOrder(req, res) {
-    return res.sendStatus(200);
-}

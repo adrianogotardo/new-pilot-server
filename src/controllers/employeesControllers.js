@@ -58,7 +58,7 @@ export async function getEmployeesList(req, res) {
         message: 'Invalid "isActive" value. Please make sure that it is "true" or "false"'
     };
     
-    const employeesList = await getEmployees(startDate, endDate, isActive, timeZone, isActive);
+    const employeesList = await getEmployees(startDate, endDate, isActive, timeZone);
     const formattedEmployeesList = employeesList.map(employee => {
         const { addressId, street, number, complement, neighbourhood, city, state, postalCode } = employee;
         const address = { addressId, street, number, complement, neighbourhood, city, state, postalCode };

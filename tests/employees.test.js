@@ -1,17 +1,16 @@
 import request from 'supertest';
 import app from '../src/app.js';
 import prisma from "../src/database.js";
+import { clearDatabase } from "./utils/clearDatabase.js";
 import { roleSeeder } from "../src/utils/roleSeeder.js";
 import { createBasicUser } from "./utils/createBasicUser.js";
 import { changeUserRole } from "./utils/changeUserRole.js";
 import { logInUser } from "./utils/logInUser.js";
 
-async function clearDatabase() {
-    const models = ['users', 'roles', 'employees_attendances', 'paychecks', 'loans', 'employees', 'incomes', 'measurements_services',  'ordered_items', 'services', 'measurements', 'orders', 'working_sites', 'stores', 'addresses'];
-    for (const model of models) {
-      await prisma[`${model}`].deleteMany({});
-    };
-};
+const timeZone = 'America/Sao_Paulo';
+const stardDate = encodeURIComponent('2024-01-01T00:00:00+03:00');
+const endDate = encodeURIComponent('2024-12-31T23:59:59+03:00');
+const invalidDate = encodeURIComponent('2024-13-32T24:60:60+15:00');
 
 let newEmployeeCorrectBody = {
     name: "João Feijão",
@@ -30,11 +29,6 @@ let newEmployeeCorrectBody = {
         postalCode: 12345678
     }
 };
-
-const timeZone = 'America/Sao_Paulo';
-const stardDate = encodeURIComponent('2024-01-01T00:00:00+03:00');
-const endDate = encodeURIComponent('2024-12-31T23:59:59+03:00');
-const invalidDate = encodeURIComponent('2024-13-32T24:60:60+15:00');
 
 let rootUser = {
     name: "Testarino",
@@ -63,7 +57,7 @@ async function createBasicUserToken() {
 
 beforeAll(async () => {
     await prisma.$connect();
-    await clearDatabase();
+    await clearDatabase(prisma);
     await roleSeeder(prisma);
     await createRootUserToken();
     await createBasicUserToken();
@@ -594,7 +588,7 @@ describe('DELETE/employee/:id', () => {
 });
 
 afterAll(async () => {
-    await clearDatabase();
+    await clearDatabase(prisma);
     await prisma.$disconnect();
 });
   

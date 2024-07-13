@@ -15,13 +15,31 @@ export async function getWorkingSiteByRegistrationNumber(registrationNumber, tra
     return workingSite;
 };
 
+export async function getWorkingSiteById(workingSiteId, transactionClient) {
+    const operationDetails = {
+        where: {
+            id: workingSiteId
+        }
+    }
+    let workingSite;
+    if(transactionClient) {
+        workingSite = await transactionClient.working_sites.findUnique(operationDetails);
+    } else {
+        workingSite = await prisma.working_sites.findUnique(operationDetails);
+    };
+    return workingSite;
+};
+
 export async function createWorkingSite(workingSite, transactionClient) {
-    const { name, registrationNumber, addressId } = workingSite;
+    const { name, registrationNumber, addressId, estimatedStartDate, estimatedEndDate, isArchived = null } = workingSite;
     const operationDetails = {
         data: {
             name,
             registration_number: registrationNumber,
-            address_id: addressId
+            address_id: addressId,
+            estimated_start_date: estimatedStartDate,
+            estimated_end_date: estimatedEndDate,
+            is_archived: !!isArchived
         },
     }
     let newWorkingSite;
@@ -33,8 +51,24 @@ export async function createWorkingSite(workingSite, transactionClient) {
     return newWorkingSite;
 };
 
+export async function createIncome(incomeData, transactionClient) {
+    const { name, workingSiteId, value, receivedAt } = incomeData;
+    const operationDetails = {
+        data: {
+            name,
+            working_site_id: workingSiteId,
+            value,
+            received_at: receivedAt,
+        },
+    }
+    let newIncome;
+    if(transactionClient) newIncome = await transactionClient.incomes.create(operationDetails);
+    else newIncome = await prisma.incomes.create(operationDetails);
+    return newIncome;
+};
+
 export async function createService(service, transactionClient) {
-    const { name, incidence, estimatedCost, estimatedStartDate, estimatedEndDate, workingSiteId } = service;
+    const { name, incidence, estimatedCost, estimatedStartDate, estimatedEndDate, workingSiteId, approximateProgress = 0 } = service;
     const operationDetails = {
         data: {
             name,
@@ -42,7 +76,8 @@ export async function createService(service, transactionClient) {
             working_site_id: workingSiteId,
             estimated_cost: estimatedCost,
             estimated_start_date: estimatedStartDate,
-            estimated_end_date: estimatedEndDate
+            estimated_end_date: estimatedEndDate,
+            approximate_progress: approximateProgress
         },
     }
     let newService;
@@ -73,7 +108,6 @@ export async function createMeasurement(measurement, transactionClient) {
 
 export async function createMeasurementService(measurementService, transactionClient) {
     const { measurementId, serviceId, requiredProgress } = measurementService;
-    console.log("measurementIt: " + measurementId + ", serviceId: " + serviceId + ", requiredProgress: " + requiredProgress);
     const operationDetails = {
         data: {
             measurement_id: measurementId,
@@ -104,6 +138,109 @@ export async function getServicesByWorkingSiteId(workingSiteId, transactionClien
     };
     return service;
 };
+
+export async function getWorkingSitesByStartDateAndIsArchived(startDate, isArchived, today) {
+    const workingSitesList = await prisma.working_sites.findMany({
+        where: {
+            estimated_start_date: {
+                gt: startDate,
+            },
+            is_archived: isArchived,
+        },
+        include: {
+            measurements: {
+                where: {
+                    date: {
+                        gt: today,
+                    },
+                },
+            orderBy: {
+                date: 'asc',
+            },
+            take: 1,
+          },
+        },
+    });
+    
+    return workingSitesList;
+};
+
+export async function getWorkingSitesByStartDate(startDate, today) {
+    const workingSitesList = await prisma.working_sites.findMany({
+        where: {
+            estimated_start_date: {
+                gt: startDate,
+            },
+        },
+        include: {
+            measurements: {
+                where: {
+                    date: {
+                        gt: today,
+                    },
+                },
+            orderBy: {
+                date: 'asc',
+            },
+            take: 1,
+          },
+        },
+    });
+    return workingSitesList;
+};
+
+export async function getWorkingSitesByIsArchived(isArchived, today) {
+    const workingSitesList = await prisma.working_sites.findMany({
+        where: {
+            is_archived: isArchived,
+        },
+        include: {
+            measurements: {
+                where: {
+                    date: {
+                        gt: today,
+                    },
+                },
+            orderBy: {
+                date: 'asc',
+            },
+            take: 1,
+          },
+        },
+    });
+    return workingSitesList;
+};
+
+export async function getAllWorkingSites(today) {
+    const workingSitesList = await prisma.working_sites.findMany({
+        include: {
+            measurements: {
+                where: {
+                    date: {
+                        gt: today,
+                    },
+                },
+                orderBy: {
+                    date: 'asc',
+                },
+                take: 1,
+            },
+        },
+    });
+    return workingSitesList;
+};
+
+export async function getGoalsByMeasurementId(measurementId) {
+    const goalsList = await prisma.measurements_services.findMany({
+        where: {
+            measurement_id: measurementId
+        },
+        include: {
+            service: true,
+        }
+    });
+    return goalsList;
+}
 
 /*
 export async function getWorkingSiteById(id, transactionClient) {

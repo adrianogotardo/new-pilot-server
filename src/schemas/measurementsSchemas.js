@@ -6,6 +6,6 @@ const measurementService = Joi.object({
 });
 
 export const newMeasurementSchema = Joi.object({
-    date: Joi.string().required(),
+    date: Joi.string().isoDate().required(),
     services: Joi.array().items(measurementService).required()
 });

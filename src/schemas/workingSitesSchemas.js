@@ -10,5 +10,6 @@ export const newWorkingSiteSchema = Joi.object({
     estimatedEndDate: Joi.string().isoDate().required(),
     address: addressSchema.required(),
     services: Joi.array().items(newServiceSchema).required(),
-    measurements: Joi.array().items(newMeasurementSchema).required()
+    measurements: Joi.array().items(newMeasurementSchema).required(),
+    isArchived: Joi.boolean().optional()
 });
