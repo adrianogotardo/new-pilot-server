@@ -1,4 +1,4 @@
-import { checkRegistrationNumberAvailability, registerWorkingSite, getWorkingSites, checkWorkingSiteId, createNewIncome } from "../services/workingSitesServices.js";
+import { checkRegistrationNumberAvailability, registerWorkingSite, getWorkingSites, checkWorkingSiteId, createNewIncome, createNewService, createNewMeasurement, getWorkingSite } from "../services/workingSitesServices.js";
 import { isValidDateString } from "../utils/isValidDateString.js";
 
 export async function registerNewWorkingSite(req, res) {
@@ -12,15 +12,31 @@ export async function registerNewWorkingSite(req, res) {
 };
 
 export async function registerNewIncome(req, res) {
-    const incomeData = req.body;
+    const incomeData = { ...req.body, workingSiteId: +req.params.siteId };
     const timeZone = req.headers['time-zone'];
     const { workingSiteId } = incomeData;
-
     await checkWorkingSiteId(workingSiteId);
     await createNewIncome(incomeData, timeZone);
 
     return res.sendStatus(201);
-}
+};
+
+export async function registerNewService(req, res) {
+    const serviceData = { ...req.body, workingSiteId: +req.params.siteId };
+    const timeZone = req.headers['time-zone'];
+    const { workingSiteId } = serviceData;
+    await checkWorkingSiteId(workingSiteId);
+    await createNewService(serviceData, timeZone);
+    return res.sendStatus(201);
+};
+
+export async function registerNewMeasurement(req, res) {
+    const measurementData = { ...req.body, workingSiteId: +req.params.siteId };
+    const timeZone = req.headers['time-zone'];
+    const { workingSiteId } = measurementData;
+    await checkWorkingSiteId(workingSiteId);
+    await createNewMeasurement(measurementData, timeZone);
+};
 
 export async function getWorkingSitesList(req, res) {
     const { startDate = null, isArchived = null } = req.query;
@@ -37,18 +53,35 @@ export async function getWorkingSitesList(req, res) {
     };
 
     const workingSitesList = await getWorkingSites(startDate, isArchived, timeZone);
-
     return res.status(200).send(workingSitesList);
 };
 
 export async function getOneWorkingSite(req, res) {
+    const workingSiteId = +req.params.id;
+    const workingSiteDetails = await getWorkingSite(workingSiteId);
+    return res.status(200).send(workingSiteDetails);
+};
 
-}
-
-/*
 export async function updateWorkingSiteData(req, res) {
     const workingSiteData = { ...req.body, id: +req.params.id };
     await updateWorkingSite(workingSiteData);
     return res.sendStatus(200);
 }
-*/
+
+export async function updateServideData(req, res) {
+    const serviceData = { ...req.body, id: +req.params.siteId };
+    await updateServide(serviceData);
+    return res.sendStatus(200);
+};
+
+export async function updateMeasurementData(req, res) {
+    const measurementData = { ...req.body, id: +req.params.siteId };
+    await updateMeasurement(measurementData);
+    return res.sendStatus(200);
+};
+
+export async function restartWorkingSite(req, res) {
+    const workingSiteId = +req.params.id;
+    await reactivateWorkinSite(workingSiteId);
+    return res.sendStatus(200);
+};

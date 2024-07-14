@@ -223,17 +223,17 @@ describe('POST/site', () => {
 
 });
 
-describe('POST/site/income', () => {
+describe('POST/site/income/:siteId', () => {
 
     it('should get status 401 for headers missing an authorization token', async () => {
         const workingSitesList = await request(app)
             .get('/site/all')
             .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
-        const workingSiteid = workingSitesList.body[0].id;
+        const workingSiteId = workingSitesList.body[0].id;
         const res = await request(app)
-            .post('/site/income')
+            .post(`/site/income/${workingSiteId}`)
             .set({ 'time-zone': `${timeZone}` })
-            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid, value: 5000000 });
+            .send({ name: 'Pagamento Caixa 1/6', value: 5000000 });
         const responseText = "The request is missing the authorization header";
         expect(res.statusCode).toEqual(401);
         expect(res.text).toEqual(responseText);
@@ -244,11 +244,11 @@ describe('POST/site/income', () => {
         const workingSitesList = await request(app)
             .get('/site/all')
             .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
-        const workingSiteid = workingSitesList.body[0].id;
+        const workingSiteId = workingSitesList.body[0].id;
         const res = await request(app)
-            .post('/site/income')
+            .post(`/site/income/${workingSiteId}`)
             .set({ 'Authorization': `Bearer ${malformedToken}`, 'time-zone': `${timeZone}` })
-            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid, value: 5000000 });
+            .send({ name: 'Pagamento Caixa 1/6', value: 5000000 });
         const responseText = "The provided token doesn't have three components (delimited by a '.')";
         expect(res.statusCode).toEqual(401);
         expect(res.text).toEqual(responseText);
@@ -258,11 +258,11 @@ describe('POST/site/income', () => {
         const workingSitesList = await request(app)
             .get('/site/all')
             .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
-        const workingSiteid = workingSitesList.body[0].id;
+        const workingSiteId = workingSitesList.body[0].id;
         const res = await request(app)
-            .post('/site/income')
+            .post(`/site/income/${workingSiteId}`)
             .set({ 'Authorization': `Bearer ${basicUser.token}`, 'time-zone': `${timeZone}` })
-            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid, value: 5000000 });
+            .send({ name: 'Pagamento Caixa 1/6', value: 5000000 });
         const responseText = "The user lacks permission to perform this operation";
         expect(res.statusCode).toEqual(401);
         expect(res.text).toEqual(responseText);
@@ -272,11 +272,11 @@ describe('POST/site/income', () => {
         const workingSitesList = await request(app)
             .get('/site/all')
             .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
-        const workingSiteid = workingSitesList.body[0].id;
+        const workingSiteId = workingSitesList.body[0].id;
         const res = await request(app)
-            .post('/site/income')
+            .post(`/site/income/${workingSiteId}`)
             .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` })
-            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid });
+            .send({ name: 'Pagamento Caixa 1/6' });
         const responseText = '"value" is required';
         expect(res.statusCode).toEqual(422);
         expect(res.text).toEqual(responseText);
@@ -286,14 +286,116 @@ describe('POST/site/income', () => {
         const workingSitesList = await request(app)
             .get('/site/all')
             .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
-        const workingSiteid = workingSitesList.body[0].id;
+        const workingSiteId = workingSitesList.body[0].id;
         const res = await request(app)
-            .post('/site/income')
+            .post(`/site/income/${workingSiteId}`)
             .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` })
-            .send({ name: 'Pagamento Caixa 1/6', workingSiteId: workingSiteid, value: 5000000 });
-        console.log(res.text);
+            .send({ name: 'Pagamento Caixa 1/6', value: 5000000 });
         expect(res.statusCode).toEqual(201);
     });
+
+});
+
+describe('POST/site/service/:siteId', () => {
+
+    it('should get status 401 for headers missing an authorization token', async () => {
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteId = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post(`/site/service/${workingSiteId}`)
+            .set({ 'time-zone': `${timeZone}` })
+            .send({
+                name: "Serviço 03",
+                incidence: 2000,
+                estimatedCost: 600000,
+                estimatedStartDate: '2024-06-01T00:00:00-03:00',
+                estimatedEndDate: '2024-06-30T23:59:59-03:00'
+            });
+        const responseText = "The request is missing the authorization header";
+        expect(res.statusCode).toEqual(401);
+        expect(res.text).toEqual(responseText);
+    });
+
+    it('should get status 401 for authorization token being malformed', async () => {
+        const malformedToken = rootUser.token.replace(/\./g, '');
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteId = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post(`/site/service/${workingSiteId}`)
+            .set({ 'Authorization': `Bearer ${malformedToken}`, 'time-zone': `${timeZone}` })
+            .send({
+                name: "Serviço 03",
+                incidence: 2000,
+                estimatedCost: 600000,
+                estimatedStartDate: '2024-06-01T00:00:00-03:00',
+                estimatedEndDate: '2024-06-30T23:59:59-03:00'
+            });
+        const responseText = "The provided token doesn't have three components (delimited by a '.')";
+        expect(res.statusCode).toEqual(401);
+        expect(res.text).toEqual(responseText);
+    });
+
+    it('should get status 401 for user not having permission to complete this operation', async () => {
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteId = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post(`/site/service/${workingSiteId}`)
+            .set({ 'Authorization': `Bearer ${basicUser.token}`, 'time-zone': `${timeZone}` })
+            .send({
+                name: "Serviço 03",
+                incidence: 2000,
+                estimatedCost: 600000,
+                estimatedStartDate: '2024-06-01T00:00:00-03:00',
+                estimatedEndDate: '2024-06-30T23:59:59-03:00'
+            });
+        const responseText = "The user lacks permission to perform this operation";
+        expect(res.statusCode).toEqual(401);
+        expect(res.text).toEqual(responseText);
+    });
+
+    it('should get status 422 for incorrect body', async () => {
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteId = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post(`/site/service/${workingSiteId}`)
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` })
+            .send({
+                incidence: 2000,
+                estimatedCost: 600000,
+                estimatedStartDate: '2024-06-01T00:00:00-03:00',
+                estimatedEndDate: '2024-06-30T23:59:59-03:00'
+            });
+        const responseText = '"name" is required';
+        expect(res.statusCode).toEqual(422);
+        expect(res.text).toEqual(responseText);
+    });
+
+    it('should get status 201 for success', async () => {
+        const workingSitesList = await request(app)
+            .get('/site/all')
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` });
+        const workingSiteId = workingSitesList.body[0].id;
+        const res = await request(app)
+            .post(`/site/service/${workingSiteId}`)
+            .set({ 'Authorization': `Bearer ${rootUser.token}`, 'time-zone': `${timeZone}` })
+            .send({
+                name: "Serviço 03",
+                incidence: 2000,
+                estimatedCost: 600000,
+                estimatedStartDate: '2024-06-01T00:00:00-03:00',
+                estimatedEndDate: '2024-06-30T23:59:59-03:00'
+            });
+        expect(res.statusCode).toEqual(201);
+    });
+
 });
 
 describe('GET/site/all', () => {

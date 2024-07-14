@@ -19,7 +19,15 @@ export async function getWorkingSiteById(workingSiteId, transactionClient) {
     const operationDetails = {
         where: {
             id: workingSiteId
-        }
+        },
+        include: {
+            services: true,
+            measurements: {
+                include: {
+                    measurements_services: true
+                }
+            }
+        },
     }
     let workingSite;
     if(transactionClient) {
@@ -87,6 +95,22 @@ export async function createService(service, transactionClient) {
         newService = await prisma.services.create(operationDetails);
     };
     return newService;
+};
+
+export async function updateService(servideData, transactionClient) {
+    const { id } = servideData;
+    delete servideData.id;
+    delete servideData.workingSiteId;
+    const operationDetails = {
+        where: { id: id },
+        data: servideData,
+    };
+    if(transactionClient) {
+        await transactionClient.services.update(operationDetails);
+    } else {
+        await prisma.services.update(operationDetails);
+    };
+    return;
 };
 
 export async function createMeasurement(measurement, transactionClient) {

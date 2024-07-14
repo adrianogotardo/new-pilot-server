@@ -3,6 +3,8 @@ import { newEmployeeSchema } from "../schemas/employeesSchemas.js";
 import { newWorkingSiteSchema } from "../schemas/workingSitesSchemas.js";
 import { newIncomeSchema } from '../schemas/incomesSchemas.js';
 import { newOrderSchema } from "../schemas/ordersSchemas.js";
+import { newMeasurementSchema } from "../schemas/measurementsSchemas.js";
+import { newServiceSchema } from "../schemas/servicesSchemas.js";
 
 export function identifySchema(route) {
     // authentication routes
@@ -15,6 +17,8 @@ export function identifySchema(route) {
     if(route.startsWith("PUT/employee")) return newEmployeeSchema;
 
     // working site routes
+    if(route.startsWith("POST/site/measurement")) return newMeasurementSchema;
+    if(route.startsWith("POST/site/service")) return newServiceSchema;
     if(route.startsWith("POST/site/income")) return newIncomeSchema;
     if(route.startsWith("POST/site")) return newWorkingSiteSchema;
     if(route.startsWith("PUT/site")) return newWorkingSiteSchema;
